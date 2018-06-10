@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+
+<html lang="en-US">
+
+<head>
+
+	<title>What Happened Today|Deaths</title>
+	
+	<meta name="author" content="Benjamin Ray"/>
+	<meta name="date" content="Summer 2018"/>
+
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<script src="jquery-3.3.1.min.js"></script>
+
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	
+	<style>
+	
+		.article{
+			font-size: 14pt;
+			padding-bottom: 40px;
+		}
+		.mw-parser-output ul li{
+			margin-top: 10px;;
+		}
+		.article a{
+			text-decoration: none;
+		}
+	</style>
+			
+</head>
+
+<body>
+<div class="container text-center">
+<h1 id="header">&nbsp;</h1>
+<h2>Deaths</h2>
+</div>
+<div class="container article" id="article"></div>		
+
+<script>
+	function getDayFormat(){
+		var d = new Date();
+		var x= d.getDate();
+		return x;
+	}
+	function getMonthFormat(){
+		var d = new Date();
+		var months = ["january","february","march","april","may","june","july","august","september","october","november","december"];
+		var x= months[d.getMonth()];
+		return x;
+	}
+	
+	function toTitleCase(str){
+		return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+	}
+	
+	var x=getMonthFormat()+"_"+getDayFormat();
+	var z=getMonthFormat()+" "+getDayFormat();
+	var z=toTitleCase(z);
+	document.getElementById("header").innerHTML="What Happened on "+z;
+
+	$(document).ready(function(){
+ 
+		$.ajax({
+			type: "GET",
+			//section 1 is events, 2 is births, 3 is deaths
+			url:"https://en.wikipedia.org/w/api.php?action=parse&format=json&page="+x+"&prop=text&section=3",
+			contentType: "application/json; charset=utf-8",
+			async: false,
+			dataType: "jsonp",
+			success: function (data, textStatus, jqXHR) {
+				
+				var markup = data.parse.text["*"];
+				var text = $('<div></div>').html(markup);
+				console.log(text);
+				$('#article').html(text);
+				
+				// modify the links so they work
+				$(function() {
+					$('a').each(function() {
+					var href = $(this).attr('href');
+					$(this).attr('href', 'https://en.wikipedia.org' + href);
+					});
+				});
+				
+				// remove any references
+				text.find('sup').remove();
+	 
+				// remove cite error
+				text.find('.mw-ext-cite-error').remove();
+				
+				text.find(".mw-editsection").remove();
+				
+				text.find(".mw-headline").remove();
+				
+				text.find(".references").remove();
+	 
+			},
+			error: function (errorMessage) {
+			}
+		});
+	});
+</script>
+
+</body>
+
+</html>	
