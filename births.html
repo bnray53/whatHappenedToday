@@ -84,7 +84,7 @@
 				var text = $('<div></div>').html(markup);
 				$('#article').html(text);
 				
-				// modify the links so they work
+				//Modify the links so they work
 				$(function() {
 					$('a').each(function() {
 					var href = $(this).attr('href');
@@ -92,7 +92,7 @@
 					});
 				});
 				
-				// remove unnecessary elements
+				//Remove unnecessary elements
 				text.find('sup').remove();
 				text.find('.mw-ext-cite-error').remove();
 				text.find(".mw-editsection").remove();
