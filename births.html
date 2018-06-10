@@ -21,7 +21,7 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 
 	<!-- Latest compiled and minified JavaScript -->
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>	
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 	
 	<style>
 	
@@ -40,48 +40,48 @@
 </head>
 
 <body>
-<div class="container text-center">
-<h1 id="header">&nbsp;</h1>
-<h2>Births</h2>
-</div>
-<div class="container article" id="article"></div>		
+	<div class="container text-center">
+		<h1 id="header">&nbsp;</h1>
+		<h2>Births</h2>
+	</div>
+	<div class="container article" id="article"></div>
 
 <script>
+	//Returns day of the month
 	function getDayFormat(){
 		var d = new Date();
 		var x= d.getDate();
 		return x;
 	}
+	//Returns month 
 	function getMonthFormat(){
 		var d = new Date();
 		var months = ["january","february","march","april","may","june","july","august","september","october","november","december"];
 		var x= months[d.getMonth()];
 		return x;
 	}
-	
+	//Capitalizes first letter in a string 
 	function toTitleCase(str){
 		return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 	}
-	
-	var x=getMonthFormat()+"_"+getDayFormat();
-	var z=getMonthFormat()+" "+getDayFormat();
-	var z=toTitleCase(z);
-	document.getElementById("header").innerHTML="What Happened on "+z;
+	//Creating new dates to be used in search paramater and header element
+	var searchDate=getMonthFormat()+"_"+getDayFormat();
+	var titleDate=getMonthFormat()+" "+getDayFormat();
+	var titleDate=toTitleCase(titleDate);
+	document.getElementById("header").innerHTML="What Happened on "+titleDate;
 
 	$(document).ready(function(){
  
 		$.ajax({
 			type: "GET",
 			//section 1 is events, 2 is births, 3 is deaths
-			url:"https://en.wikipedia.org/w/api.php?action=parse&format=json&page="+x+"&prop=text&section=2",
+			url:"https://en.wikipedia.org/w/api.php?action=parse&format=json&page="+searchDate+"&prop=text&section=2",
 			contentType: "application/json; charset=utf-8",
 			async: false,
 			dataType: "jsonp",
 			success: function (data, textStatus, jqXHR) {
-				
 				var markup = data.parse.text["*"];
 				var text = $('<div></div>').html(markup);
-				console.log(text);
 				$('#article').html(text);
 				
 				// modify the links so they work
@@ -92,20 +92,17 @@
 					});
 				});
 				
-				// remove any references
+				// remove unnecessary elements
 				text.find('sup').remove();
-	 
-				// remove cite error
 				text.find('.mw-ext-cite-error').remove();
-				
 				text.find(".mw-editsection").remove();
-				
 				text.find(".mw-headline").remove();
-				
 				text.find(".references").remove();
 	 
 			},
 			error: function (errorMessage) {
+				console.log(errorMessage);
+				alert("Request Failed. Please Try Again")
 			}
 		});
 	});
